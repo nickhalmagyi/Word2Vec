@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 ## Making a dictionary from a input file of text
 ## lowercase unique entries
@@ -20,10 +20,9 @@ rng = np.random
 # 
 # ## Helper functions for text analysis
 
-# In[ ]:
+# In[30]:
 
 #------------------------------------------
-# A useful function in testing
 def linecount(tfile):
     with open(tfile) as f:
         i=0
@@ -31,6 +30,7 @@ def linecount(tfile):
             i+=1
     return i 
 
+#------------------------------------------
 # The words in simplelist are too common to 
 # have syntatic meaning
 simplelist = set('for a of the this that these those and to in'.split())
@@ -81,9 +81,9 @@ def container_sum(contnr,dlen):
     return contav
 
 
-# In[ ]:
-
-# run_container takes a textfile and gives two numpy arrays.
+#------------------------------------------
+# run_container takes a textfile and a dictionary
+# and outputs two numpy arrays:
 # Array[1]: Each row is the average of the vector rep 
 #           of each word in a bag of size contsize. 
 #           This is the input for the NNet
@@ -96,25 +96,29 @@ def run_container(tfile, dictcut, contsize, lines):
         
         contnr=[] # will continuously contain the bag of words
         linenum=0 # counter for lines in the training data set
-        dlen=len(dictcut) # length of the dictionary, and length of the vector for each word
-        inarr=np.empty((0,dlen))
-        outarr=np.empty((0,dlen))
+        inarr=[]
+        outarr=[]
         
         for line in f:
-            if linenum==lines:
+            if linenum>lines:
                 break
+            linenum+=1
             line=(line.lower()).translate(None, string.punctuation)
             for word in nltk.word_tokenize(line):
                 if word in dictcut:
                     contnr.append(dictcut[word]) # add next word into container
                 if len(contnr)==contsize: # when container is full
-                    linenum+=1
-                    inarr=np.vstack((inarr,container_sum(contnr,dlen))) # add av of bag to input
+                    inarr.append(contnr) # add bag of words to input
                     # note contsize is odd so contsize/2 is integer and the middle of the container
-                    outarr=np.vstack((outarr,unit_vector(contnr[contsize/2],dlen))) # add target word to output
+                    outarr.append([contnr[contsize/2]]) # add target word to output
                     contnr=contnr[1:] # delete first word in container 
                 
         return [inarr,outarr]
+
+#------------------------------------------
+# This function takes a textfile and some parameters
+# and outputs two numpy arrays and a word dictionary for W2V, 
+# see run_container fordetails of output
 
 def w2vdatafromtext(tfile,contsize,trainlines,freqcutoff):
     textdict=textfile_worddict(tfile,lines=trainlines)
@@ -123,8 +127,12 @@ def w2vdatafromtext(tfile,contsize,trainlines,freqcutoff):
     return [textdictcut,w2vdata[0],w2vdata[1]]
 
 
+# In[34]:
+
+w2vdatafromtext("delorme.txt", contsize=7, trainlines=100000,freqcutoff=1)
+
+
 # In[ ]:
 
-# W2Vdata=w2vdatafromtext("textfilesmall.txt",contsize=5,trainlines=10,freqcutoff=1)
-# print W2Vdata
+
 
