@@ -127,12 +127,4 @@ def w2vdatafromtext(tfile,contsize,trainlines,freqcutoff):
     return [textdictcut,w2vdata[0],w2vdata[1]]
 
 
-# In[34]:
-
-w2vdatafromtext("delorme.txt", contsize=7, trainlines=100000,freqcutoff=1)
-
-
-# In[ ]:
-
-
 
