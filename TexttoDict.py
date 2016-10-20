@@ -64,24 +64,6 @@ def dict_cutoff(ddict,cutoff):
     return wccutoff
 
 #------------------------------------------
-# makes a unit vector in numpy
-def unit_vector(index,length):
-    unitvec=np.eye(1,length,index)
-    return unitvec
-
-
-#------------------------------------------
-# helper function to take a bag of words and returns a numpy array of size (0,dlen)
-# which is the sum of the representative vectors for each word
-def container_sum(contnr,dlen):
-    contsum=np.zeros(dlen)
-    for i in xrange(len(contnr)):
-        contsum=np.add(contsum,unit_vector(contnr[i],dlen))
-    contav=(1/float(len(contnr)))*contsum
-    return contav
-
-
-#------------------------------------------
 # run_container takes a textfile and a dictionary
 # and outputs two numpy arrays:
 # Array[1]: Each row is the average of the vector rep 
@@ -110,7 +92,7 @@ def run_container(tfile, dictcut, contsize, lines):
                 if len(contnr)==contsize: # when container is full
                     inarr.append(contnr) # add bag of words to input
                     # note contsize is odd so contsize/2 is integer and the middle of the container
-                    outarr.append([contnr[contsize/2]]) # add target word to output
+                    outarr.append(contnr[contsize/2]) # add target word to output
                     contnr=contnr[1:] # delete first word in container 
                 
         return [inarr,outarr]
@@ -125,6 +107,9 @@ def w2vdatafromtext(tfile,contsize,trainlines,freqcutoff):
     textdictcut=dict_cutoff(textdict,freqcutoff)
     w2vdata=run_container(tfile,textdictcut,contsize,lines=trainlines)
     return [textdictcut,w2vdata[0],w2vdata[1]]
+
+
+# In[ ]:
 
 
 
